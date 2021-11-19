@@ -23,6 +23,7 @@ async function run(){
       const dronesCollection = database.collection('products');
       const reviewsCollection = database.collection('reviews');
       const usersCollection = database.collection('users');
+      const ordersCollection = database.collection('orders');
 
       //GET API-for home
       app.get('/homeProducts', async(req, res)=>{
@@ -45,6 +46,22 @@ async function run(){
         res.json(result)
       });
 
+      //delete api for products collection
+      app.delete('/allProducts/:id', async(req, res)=>{
+        const id = req.params.id;
+        const query = {_id: ObjectId(id)};
+        const result = await dronesCollection.deleteOne(query);
+        res.json(result)
+      });
+
+      //delete api for products collection
+      app.delete('/orders/:id', async(req, res)=>{
+        const id = req.params.id;
+        const query = {_id: ObjectId(id)};
+        const result = await ordersCollection.deleteOne(query);
+        res.json(result)
+      });
+
       //GET API for single query
       app.get('/allProducts/:id', async(req, res)=>{
         const id = req.params.id;
@@ -52,6 +69,33 @@ async function run(){
         const drone = await dronesCollection.findOne(query);
         res.send(drone);
     });
+
+    //GET API for All Orders
+    app.get('/orders', async(req, res)=>{
+      const cursor = ordersCollection.find({});
+      const orders = await cursor.toArray();
+      res.send(orders);
+    });
+
+    //POST api for orders collections
+    app.post('/orders', async(req, res)=>{
+      const orders = req.body;
+      const result = await ordersCollection.insertOne(orders);
+      res.json(result)
+    });
+
+    //GET api for finding specific user's order
+    // app.get('/orders/:email', async(req, res)=>{
+    //   const email = req.params.email;
+    //   const query = {email: email};
+    //   const order = await ordersCollection.findOne(query);
+    //   let isAdmin = false;
+    //   if(user?.role === 'admin'){
+    //     isAdmin=true;
+    //   }
+    //   res.json({admin: isAdmin});
+    // })
+
 
       // POST API for adding reviews to the database
       app.post('/reviews', async(req, res)=>{
